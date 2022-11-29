@@ -12,4 +12,5 @@ URLS=""https://wiki.mozilla.org/Firefox/CommandLineOptions" "https://github.com/
 # Invoke ff command
 for URL in ${URLS}; do
     firefox -private-window ${URL}
+    sleep 0.1
 done
