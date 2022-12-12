@@ -6,15 +6,7 @@
 # Use script by invoking ./ueransim-deploy.sh
 # Script starts here:
 
-VERBOSE="false"
-PASSWORD=""
-VERBOSE_CMD="> /dev/null"
-
-# Usage
-usage() {
-    echo "-v for verbose mode" >&2
-    exit 1
-}
+#TODO: verbose mode
 
 # Check sudo 
 check_sudo() {
@@ -31,20 +23,15 @@ install_deps() {
     local DEP_LIST="git make gcc g++ libsctp-dev lksctp-tools iproute2 net-tools"
 
     # Update and upgrade current package list
-    echo "Updating packages.."
-    apt-get -y update ${VERBOSE_CMD}
-    apt-get -y upgrade ${VERBOSE_CMD}
-    echo "Updating packages complete."
-    echo
+    apt-get -y update 
+    apt-get -y upgrade 
 
     # Install required dependencies
-    echo "Installing ${DEP_LIST}.."
-    apt-get -y install ${DEP_LIST} ${VERBOSE_CMD}
+    apt-get -y install ${DEP_LIST}
 
     # Installing cmake
-    snap install cmake --classic ${VERBOSE_CMD}
-    echo "Dependencies installed."
-    echo
+    snap install cmake --classic
+
 }
 
 # Clone Repo
@@ -66,19 +53,10 @@ build_UERANSIM() {
     then
         echo "make failed, cleaning up.."
         cd ~ 
-        rm -rf ~/UERANSIM > /dev/null 
+        rm -rf ~/UERANSIM
         echo "Cleanup complete"
     fi    
 }
-
-
-getopts v OPTION 
-do
-    case ${OPTION} in
-        v) VERBOSE_CMD="" ;;
-        ?) usage
-    esac
-done
 
 check_sudo
 install_deps
