@@ -12,20 +12,19 @@ install_deps() {
     # List of dependencies
     local DEP_LIST="git make gcc g++ libsctp-dev lksctp-tools iproute2 net-tools"
 
-    # Become root
-    sudo su
+    # Get password
+    read -p "Enter Password: " PASSWORD
 
     # Update and upgrade current package list
-    apt-get -y update 
-    apt-get -y upgrade 
+    echo ${PASSWORD} | sudo -S apt-get -y update 
+    echo ${PASSWORD} | sudo -S apt-get -y upgrade 
 
     # Install required dependencies
-    apt-get -y install ${DEP_LIST}
+    echo ${PASSWORD} | sudo -S apt-get -y install ${DEP_LIST}
 
     # Installing cmake
-    snap install cmake --classic
+    echo ${PASSWORD} | sudo -S snap install cmake --classic
 
-    exit
 }
 
 # Clone Repo
