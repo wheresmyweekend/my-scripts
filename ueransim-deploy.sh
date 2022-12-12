@@ -6,21 +6,14 @@
 # Use script by invoking ./ueransim-deploy.sh
 # Script starts here:
 
-#TODO: verbose mode
-
-# Check sudo 
-check_sudo() {
-    if [[ ${UID} -ne 0 ]]
-    then 
-        echo "Run as sudo or root" >&2
-        exit 1
-    fi
-}
 
 # Install dependencies
 install_deps() {
     # List of dependencies
     local DEP_LIST="git make gcc g++ libsctp-dev lksctp-tools iproute2 net-tools"
+
+    # Become root
+    sudo su
 
     # Update and upgrade current package list
     apt-get -y update 
@@ -32,6 +25,7 @@ install_deps() {
     # Installing cmake
     snap install cmake --classic
 
+    exit
 }
 
 # Clone Repo
@@ -58,7 +52,6 @@ build_UERANSIM() {
     fi    
 }
 
-check_sudo
 install_deps
 clone_repo
 build_UERANSIM
