@@ -73,6 +73,9 @@ set_network() {
         echo ${PASSWORD} | sudo -S iptables -A FORWARD -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1400
     fi
 
+    # NOTE: Might need
+    # sudo iptables -I FORWARD 1 -j ACCEPT
+
     echo ${PASSWORD} | sudo -S systemctl stop ufw
 }
 
