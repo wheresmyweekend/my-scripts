@@ -30,7 +30,7 @@ install_golang() {
     fi
 
     echo ${PASSWORD} | sudo -S tar -C /usr/local -zxvf go1.14.4.linux-amd64.tar.gz
-    if [[ ! ${?} -ne 0 ]]
+    if [[ ${?} -ne 0 ]]
     then 
         echo "Failed to install golang 1.14.4" >&2
         exit 1
@@ -106,7 +106,7 @@ build_from_repo() {
     cd gtp5g
     make
     echo ${PASSWORD} | sudo -S make install
-    
+
     cd ~/free5gc
     make
 }
