@@ -60,8 +60,19 @@ install_deps() {
 # Setting the host network settings
 set_network() {
     echo ${PASSWORD} | sudo -S sysctl -w net.ipv4.ip_forward=1
-    echo ${PASSWORD} | sudo -S iptables -t nat -A POSTROUTING -o ${NETWORK_INTERFACE} -j MASQUERADE
-    echo ${PASSWORD} | sudo -S iptables -A FORWARD -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1400
+
+    echo ${PASSWORD} | sudo -S iptables -t nat -C POSTROUTING -o ${NETWORK_INTERFACE} -j MASQUERADE >> /dev/null
+    if [[ ${?} -ne 0 ]]
+    then
+        echo ${PASSWORD} | sudo -S iptables -t nat -A POSTROUTING -o ${NETWORK_INTERFACE} -j MASQUERADE
+    fi
+
+    echo ${PASSWORD} | sudo -S iptables -C FORWARD -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1400 >> /dev/null
+    if [[ ${?} -ne 0 ]]
+    then
+        echo ${PASSWORD} | sudo -S iptables -A FORWARD -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1400
+    fi
+
     echo ${PASSWORD} | sudo -S systemctl stop ufw
 }
 
@@ -69,12 +80,33 @@ set_network() {
 # TODO: prompt for if shell error, change default shell to bash
 build_from_repo() {
     cd ~ 
-    git clone --recursive -b v3.2.1 -j `nproc` https://github.com/free5gc/free5gc.git
+    if [[ ! -d free5gc ]]
+    then
+        git clone --recursive -b v3.2.1 -j `nproc` https://github.com/free5gc/free5gc.git
+    fi
+
+    if [[ ${?} -ne 0 ]]
+    then
+        echo "Failed to clone free5gc repo. Exiting." >&2
+        exit 1
+    fi
+
     cd free5gc
-    git clone https://github.com/free5gc/gtp5g.git
+    if [[ ! -d free5gc ]]
+    then
+        git clone https://github.com/free5gc/gtp5g.git
+    fi
+
+    if [[ ${?} -ne 0 ]]
+    then
+        echo "Failed to clone gtp5g repo. Exiting." >&2
+        exit 1
+    fi
+
     cd gtp5g
     make
     echo ${PASSWORD} | sudo -S make install
+    
     cd ~/free5gc
     make
 }
